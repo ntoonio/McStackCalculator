@@ -1,0 +1,121 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	</head>
+	<body>
+		<div id="amount-to-stacks">
+			<input type="number" id="value-input">
+			<input type="number" id="stack-size-input", value="64">
+			<input type="checkbox" id="blocks-checkbox">
+			<button onclick="_DOMcalculateStacks()">Calculate</button>
+		</div>
+
+		<table id="output-table" hidden>
+			<tr>
+				<th>Unit</th>
+				<th>Amount</th>
+			</tr>
+		</table>
+
+		<script src="calculate.js"></script>
+
+		<script>
+			const TABLE = document.getElementById("output-table")
+
+			function _DOMcalculateStacks() {
+				const VALUE = document.getElementById("value-input").value
+				const STACK_SIZE = document.getElementById("stack-size-input").value
+				const BLOCK_SIZE = document.getElementById("blocks-checkbox").checked ? 9 : 0 // should be 0 if not to be used.
+				// Also, I don't know if there's some items that can be crafted into a block with another amount than 9.
+				// Or it might be useful be able to specify another amount incase of calculating the amount of snowballs to make snow blocks
+
+				TABLE.hidden = false;
+
+				// Clear out the table except the header
+				while (TABLE.rows.length > 1) {
+					TABLE.deleteRow(1);
+				}
+
+				const unitAmounts = calculateStacks(VALUE, STACK_SIZE, BLOCK_SIZE)
+				console.log(unitAmounts)
+				// Render units and amounts
+				for (let i = 0; i < unitAmounts._units.length; i++) {
+					const unit = unitAmounts[unitAmounts._units[i].unit]
+
+					// Hide rows with the amount 0 and only show the items row if the items doesn't reach a stack
+					if (i == 0 && unit.amount >= STACK_SIZE || unit.amount == 0) continue
+
+					// Create the DOMs to display
+					const unitTr = document.createElement("tr")
+					TABLE.appendChild(unitTr)
+					const td = document.createElement("td")
+					unitTr.appendChild(td)
+					const td2 = document.createElement("td")
+					unitTr.appendChild(td2)
+					const td3 = document.createElement("td")
+					unitTr.appendChild(td3)
+
+					td.innerText = unit.name
+					td2.innerText = unit.amount
+					td3.innerText = unit.overflow.percent
+
+					var hideLeadingZero = true
+
+					for (let j = i; j > 0; j--) {
+						const subunit = unitAmounts._units[j - 1]
+						const subunitAmount = unit.overflow[subunit.unit]
+
+						// Create the DOMs to display
+						const subunitTr = document.createElement("tr")
+						subunitTr.classList.add("tr-italic")
+						TABLE.appendChild(subunitTr)
+						subunitTr.appendChild(document.createElement("td"))
+						const td = document.createElement("td")
+						subunitTr.appendChild(td)
+						const td2 = document.createElement("td")
+						subunitTr.appendChild(td2)
+
+						td.innerText = subunit.name
+						td2.innerText = subunitAmount
+
+						// Hide leading zero
+						if (subunitAmount == 0 && hideLeadingZero) {
+							subunitTr.classList.add("hidden-leading-zero")
+						}
+						else if (subunitAmount != 0 && hideLeadingZero) {
+							hideLeadingZero = false
+						}
+					}
+				}
+			}
+		</script>
+
+		<style>
+			#output-table, #output-table td, #output-table th, #output-table tr {
+				border: 1px solid black;
+				padding: 5px;
+			}
+
+			#output-table tr.tr-italic {
+				font-style: italic;
+			}
+
+			#output-table tr:not(.tr-italic) {
+				background-color: lightblue;
+			}
+
+			#output-table {
+				border-collapse: collapse;
+			}
+
+			#output-table th {
+				background-color: white;
+			}
+
+			#output-table .hidden-leading-zero {
+				display: none;
+			}
+
+		</style>
+	</body>
+</html>
