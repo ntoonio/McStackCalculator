@@ -38,7 +38,7 @@ function calculateStacks(value, stackSize = 64, blocks = 0) {
 		// The decimals that overflows the unit but doesn't fill completely
 		const leftOver = parseFloat((value / f) % 1)
 		// Calculate how many percent is filled of the next one of the same unit
-		const leftOverPercentage = leftOver < 0.001 ? ">0.1%" : (leftOver * 100).toFixed(1) + "%"
+		const leftOverPercentage = leftOver < 0.001 ? "<0.1%" : (leftOver * 100).toFixed(1) + "%"
 
 		const unitAmount = {name: unit.name, amount: amount, overflow: {percent: leftOverPercentage}}
 
